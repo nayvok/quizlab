@@ -113,6 +113,26 @@ class QuizRepository(
                 createdAt = quiz.createdAt
             )
         )
+        
+        // Update questions: delete old ones and insert new ones
+        if (quiz.questions.isNotEmpty()) {
+            // Note: CASCADE DELETE would handle this, but we do it explicitly for clarity
+            // Delete old questions associated with this quiz
+            val oldQuestions = questionDao.getQuestionsByQuizIdSync(quiz.id)
+            oldQuestions.forEach { questionDao.deleteQuestion(it) }
+            
+            // Insert new questions
+            val questionEntities = quiz.questions.map { question ->
+                QuestionEntity(
+                    id = 0, // Let Room auto-generate new IDs
+                    quizId = quiz.id,
+                    text = question.text,
+                    correctAnswer = question.correctAnswer,
+                    wrongAnswers = question.wrongAnswers.joinToString(", ")
+                )
+            }
+            questionDao.insertQuestions(questionEntities)
+        }
     }
 
     // Delete quiz

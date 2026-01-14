@@ -112,7 +112,11 @@ fun QuizEditorScreen(
                     IconButton(
                         onClick = {
                             if (quizTitle.isNotEmpty() && questions.isNotEmpty()) {
-                                viewModel.createQuiz(quizTitle, questions)
+                                if (quizId > 0) {
+                                    viewModel.updateQuiz(quizId, quizTitle, questions)
+                                } else {
+                                    viewModel.createQuiz(quizTitle, questions)
+                                }
                                 navController.popBackStack()
                             }
                         }

@@ -67,6 +67,17 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun updateQuiz(quizId: Long, title: String, questions: List<Question>) {
+        viewModelScope.launch {
+            val quiz = Quiz(
+                id = quizId,
+                title = title,
+                questions = questions
+            )
+            repository.updateQuiz(quiz)
+        }
+    }
+
     fun addQuestion(quizId: Long, question: Question) {
         viewModelScope.launch {
             repository.insertQuestion(question.copy(quizId = quizId))
