@@ -3,25 +3,57 @@ package ru.susu.yushkov.quizlabapp.ui.screens
 import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import ru.susu.yushkov.quizlabapp.data.models.Question
 import ru.susu.yushkov.quizlabapp.data.repository.Contact
 import ru.susu.yushkov.quizlabapp.data.repository.ContactRepository
 import ru.susu.yushkov.quizlabapp.ui.components.QuestionItem
 import ru.susu.yushkov.quizlabapp.ui.viewmodels.QuizViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +105,7 @@ fun QuizEditorScreen(
                 title = { Text(if (quizId > 0) "Редактировать викторину" else "Создать викторину") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 },
                 actions = {
@@ -129,7 +161,11 @@ fun QuizEditorScreen(
                     },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Из контактов")
                 }
@@ -229,10 +265,10 @@ fun EditQuestionDialog(
 ) {
     var questionText by remember { mutableStateOf(question.text) }
     var correctAnswer by remember { mutableStateOf(question.correctAnswer) }
-    var wrongAnswers by remember { 
+    var wrongAnswers by remember {
         mutableStateOf(
             if (question.wrongAnswers.isEmpty()) listOf("") else question.wrongAnswers
-        ) 
+        )
     }
 
     AlertDialog(
@@ -255,13 +291,13 @@ fun EditQuestionDialog(
                     label = { Text("Правильный ответ") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                
+
                 Text(
                     text = "Неправильные ответы:",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                 )
-                
+
                 wrongAnswers.forEachIndexed { index, wrongAnswer ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -293,14 +329,18 @@ fun EditQuestionDialog(
                         }
                     }
                 }
-                
+
                 TextButton(
                     onClick = {
                         wrongAnswers = wrongAnswers + ""
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Добавить неправильный ответ")
                 }
@@ -363,13 +403,13 @@ fun AddQuestionDialog(
                     label = { Text("Правильный ответ") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                
+
                 Text(
                     text = "Неправильные ответы:",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                 )
-                
+
                 wrongAnswers.forEachIndexed { index, wrongAnswer ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -401,14 +441,18 @@ fun AddQuestionDialog(
                         }
                     }
                 }
-                
+
                 TextButton(
                     onClick = {
                         wrongAnswers = wrongAnswers + ""
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Добавить неправильный ответ")
                 }
@@ -447,18 +491,18 @@ fun generateContactQuestions(
 ): List<Question> {
     // Убираем дубликаты по имени контакта, оставляя только первый номер для каждого имени
     val uniqueContacts = contacts.distinctBy { it.name }
-    
+
     // Берем нужное количество уникальных контактов
     val selectedContacts = uniqueContacts.shuffled().take(count)
-    
+
     return selectedContacts.map { contact ->
         // Для неправильных ответов используем другие уникальные контакты
         val otherContacts = uniqueContacts
             .filter { it.name != contact.name }
             .shuffled()
             .take(3)
-        
-        val wrongAnswers = otherContacts.map { 
+
+        val wrongAnswers = otherContacts.map {
             when (format) {
                 QuestionFormat.PhoneToName -> it.name
                 QuestionFormat.NameToPhone -> it.phoneNumber
